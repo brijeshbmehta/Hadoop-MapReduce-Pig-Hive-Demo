@@ -1,0 +1,22 @@
+CREATE TABLE uUser (userID INT,age INT,gender STRING,job STRING,zipCode INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH '/home/hadoop/hadoop/dataset/movies/u.user' OVERWRITE INTO TABLE uUser;
+
+select * from uUser limit 0,20;
+
+
+
+CREATE TABLE uData_with_Gender as select u.userid, d.movieid, d.rating, d.unixtime, d.itemTitle, u.gender from uData_jn_Item d inner join uUser u ON (d.userid = u.userid);
+
+select * from uData_with_Gender limit 0,20;
+
+
+
+
+select gender, count(userid) as no_user, avg(rating) as avg_rating from uData_with_Gender group by gender;
+
+
+
+select movieid, itemtitle, count(userid) as no_user, avg(rating) as avg_rating from uData_with_Gender where gender = 'M' group by movieid,itemtitle having avg_rating >= 5 sort by no_user desc;
+
+select movieid, itemtitle, count(userid) as no_user, avg(rating) as avg_rating from uData_with_Gender where gender = 'F' group by movieid,itemtitle having avg_rating >= 5 sort by no_user desc;

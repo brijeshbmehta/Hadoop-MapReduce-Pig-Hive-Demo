@@ -1,0 +1,6 @@
+bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.2.jar -D mapred.job.name=job_countByItemID -file program/mapper.py -mapper mapper.py -file program/reducer.py -reducer reducer.py -input /input/movies/u.data -output /output/movies/5
+
+bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.2.jar -D mapred.job.name=job_countByItemID_withCombiner -file program/mapper.py -mapper mapper.py -file program/combiner.py -combiner combiner.py -file program/reducer.py -reducer reducer.py -input /input/movies/u.data -output /output/movies/7
+
+bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.2.jar -D mapred.job.name=job_hist -file program/hist_mapper.py -mapper hist_mapper.py -file program/hist_reducer.py -reducer hist_reducer.py -input /output/movies/7/part-00000 -output /output/movies/8
+

@@ -1,0 +1,39 @@
+schematool -initSchema -dbType derby
+
+
+
+CREATE TABLE uData (userid INT,movieid INT,rating INT,unixtime INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH '/home/hadoop/hadoop/dataset/movies/u.data' OVERWRITE INTO TABLE uData;
+
+select * from uData limit 0,20;
+
+
+
+CREATE TABLE uItem (itemID INT,itemTitle STRING) ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH '/home/hadoop/hadoop/dataset/movies/u.item' OVERWRITE INTO TABLE uItem;
+
+select * from uItem limit 0,20;
+
+
+
+CREATE TABLE uData_jn_Item as select d.userid, d.movieid, d.rating, d.unixtime, i.itemTitle from uData d inner join uItem i ON (d.movieid = i.itemID);
+
+select * from uData_jn_Item limit 0,20;
+
+
+
+create table ratings as select movieid, itemtitle, count(userid) as no_user from uData_jn_Item group by movieid,itemtitle sort by no_user desc;
+
+hive -S --hiveconf hive.cli.print.header=true --hiveconf hive.resultset.use.unique.column.names=false --database default -e 'select * from ratings;' > /home/hadoop/table.csv
+
+
+
+select count(movieid) from ratings where no_user > 299;
+
+
+
+select movieid, itemtitle, count(userid) as no_user, avg(rating) as avg_rating from uData_jn_Item group by movieid,itemtitle having avg_rating >= 4.5 sort by no_user desc;
+
+
