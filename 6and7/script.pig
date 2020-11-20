@@ -10,9 +10,6 @@ limit_avg_rating = LIMIT avg_rating_sort 20;
 
 STORE limit_avg_rating INTO 'hdfs://aai07server:9000/output/movies/pig_Output' USING PigStorage (',');
 
-
-
-
 filter_data = FILTER avg_rating BY avg_u_data <= 1.5;
 
 filter_group = GROUP filter_data BY itemID;
